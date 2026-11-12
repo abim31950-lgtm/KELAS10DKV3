@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DKV 3 Studio — Sistem Informasi & Profil Kelas</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Space Grotesk & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                    },
+                    colors: {
+                        lemon: {
+                            50: '#FEFCE8',
+                            100: '#FEF9C3',
+                            200: '#FEF08A',
+                            300: '#FDE047',
+                            400: '#FACC15',
+                            500: '#EAB308',
+                        },
+                        jet: {
+                            950: '#050505',
+                            900: '#0A0A0A',
+                            800: '#141414',
+                            700: '#1F1F1F',
+                        }
+                    },
+                    boxShadow: {
+                        'brutal': '5px 5px 0px #0A0A0A',
+                        'brutal-lg': '8px 8px 0px #0A0A0A',
+                        'brutal-yellow': '5px 5px 0px #FDE047',
+                        'brutal-sm': '3px 3px 0px #0A0A0A',
+                    },
+                    animation: {
+                        'marquee': 'marquee 28s linear infinite',
+                        'float': 'float 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-6px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FEFCE8;
+            color: #0A0A0A;
+            overflow-x: hidden;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FEF9C3;
+            border-left: 2px solid #0A0A0A;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0A0A0A;
+            border: 2px solid #FEF9C3;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #262626;
+        }
+        /* Neo-Brutalist Card Lift */
+        .studio-card {
+            transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .studio-card:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 8px 8px 0px #0A0A0A;
+        }
+        .studio-card-dark {
+            transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .studio-card-dark:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 7px 7px 0px #FDE047;
+        }
+        /* Editorial Dot Grid Background */
+        .bg-editorial-dots {
+            background-image: radial-gradient(#0A0A0A 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .bg-dark-grid {
+            background-image: linear-gradient(to right, rgba(254, 240, 138, 0.06) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(254, 240, 138, 0.06) 1px, transparent 1px);
+            background-size: 36px 36px;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-jet-900 selection:text-lemon-300">
+
+    <!-- Custom Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="sticky top-0 z-40 bg-lemon-100/95 backdrop-blur-md border-b-2 border-jet-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 md:h-20">
+                <!-- Brand / Custom Logo Slot (Mudah Diganti) -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <!-- GANTI LOGO DI SINI: Ganti isi #brand-logo-wrapper dengan <img src="logo-anda.png" alt="Logo DKV 3" class="w-full h-full object-contain"> -->
+                    <div id="brand-logo-wrapper" class="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-jet-900 border-2 border-jet-900 shadow-brutal-sm flex items-center justify-center group-hover:bg-lemon-300 transition-colors overflow-hidden">
+                        <svg class="w-7 h-7 text-lemon-300 group-hover:text-jet-900 transition-colors" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 8H18C23.5228 8 28 12.4772 28 18C28 23.5228 23.5228 28 18 28H8V8Z" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/>
+                            <circle cx="17" cy="18" r="4.2" fill="currentColor"/>
+                            <path d="M25 6L30 11" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-display font-bold text-xl md:text-2xl tracking-tight text-jet-900">DKV <span class="bg-jet-900 text-lemon-300 px-1.5 py-0.5 rounded-md">3</span></span>
+                            <span class="hidden sm:inline-block text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-lemon-300 text-jet-900 border border-jet-900">Studio</span>
+                        </div>
+                        <p class="text-[11px] font-semibold text-neutral-700 hidden sm:block">Desain Komunikasi Visual</p>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden lg:flex items-center gap-6 text-sm font-bold text-jet-900">
+                    <a href="#struktur" class="px-3 py-1.5 rounded-lg hover:bg-lemon-300 transition-colors">Struktur</a>
+                    <a href="#keuangan" class="px-3 py-1.5 rounded-lg hover:bg-lemon-300 transition-colors">Kas Kelas</a>
+                    <a href="#jadwal" class="px-3 py-1.5 rounded-lg hover:bg-lemon-300 transition-colors">Jadwal & Piket</a>
+                    <a href="#kesepakatan" class="px-3 py-1.5 rounded-lg hover:bg-lemon-300 transition-colors">Aturan</a>
+                    <a href="#direktori" class="px-3 py-1.5 rounded-lg hover:bg-lemon-300 transition-colors">Absensi & Siswa</a>
+                </nav>
+
+                <!-- Action Buttons: Mode Admin & Mobile Drawer -->
+                <div class="flex items-center gap-2.5 sm:gap-3">
+                    <!-- Badge Status Mode -->
+                    <span id="mode-indicator" class="hidden md:inline-flex items-center gap-2 text-xs font-bold px-3.5 py-1.5 rounded-full bg-white text-jet-900 border-2 border-jet-900">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-jet-900"></span>
+                        Mode Siswa
+                    </span>
+
+                    <!-- Toggle Mode Admin Button -->
+                    <button id="btn-admin-toggle" onclick="handleAdminButtonClick()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold bg-jet-900 hover:bg-lemon-300 text-lemon-300 hover:text-jet-900 border-2 border-jet-900 shadow-brutal-sm transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span id="btn-admin-text">Mode Admin</span>
+                    </button>
+
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleMobileMenu()" class="lg:hidden p-2.5 rounded-xl bg-lemon-300 text-jet-900 border-2 border-jet-900 shadow-brutal-sm" aria-label="Menu">
+                        <i class="fa-solid fa-bars text-base"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown Navigation -->
+        <div id="mobile-menu" class="hidden lg:hidden border-t-2 border-jet-900 bg-lemon-100 px-4 py-4 space-y-2">
+            <a href="#struktur" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-sm font-bold text-jet-900 hover:bg-lemon-300 border border-transparent hover:border-jet-900">Struktur Organisasi</a>
+            <a href="#keuangan" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-sm font-bold text-jet-900 hover:bg-lemon-300 border border-transparent hover:border-jet-900">Keuangan & Kas Kelas</a>
+            <a href="#jadwal" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-sm font-bold text-jet-900 hover:bg-lemon-300 border border-transparent hover:border-jet-900">Jadwal Pelajaran & Piket</a>
+            <a href="#kesepakatan" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-sm font-bold text-jet-900 hover:bg-lemon-300 border border-transparent hover:border-jet-900">Kesepakatan Kelas</a>
+            <a href="#direktori" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-sm font-bold text-jet-900 hover:bg-lemon-300 border border-transparent hover:border-jet-900">Absensi & Direktori 36 Siswa</a>
+        </div>
+    </header>
+
+    <!-- ================= ADMIN CONTROL BANNER (Hanya Muncul Saat Mode Admin Aktif) ================= -->
+    <div id="admin-toolbar" class="hidden bg-jet-900 text-lemon-200 border-b-2 border-jet-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold">
+                <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-lemon-300 text-jet-900 font-bold">
+                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                </span>
+                <span><strong class="text-lemon-300 uppercase tracking-wide">Mode Admin Aktif:</strong> Anda dapat mengedit struktur kelas, nominal kas, jadwal, aturan, dan direktori siswa.</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="resetAllData()" class="px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-rose-500 hover:bg-rose-400 text-white border border-black transition-colors">
+                    <i class="fa-solid fa-rotate-left mr-1"></i> Reset Data Awal
+                </button>
+                <button onclick="logoutAdmin()" class="px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-lemon-300 hover:bg-lemon-200 text-jet-900 transition-colors">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar Admin
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= HERO SECTION ================= -->
+    <section class="relative pt-12 pb-16 md:pt-20 md:pb-24 bg-lemon-50 bg-editorial-dots">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+                <!-- Left Editorial Content -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-jet-900 text-lemon-300 text-xs font-extrabold uppercase tracking-widest shadow-brutal-sm">
+                        <span class="w-2.5 h-2.5 rounded-full bg-lemon-300 animate-ping"></span>
+                        PORTAL RESMI & CREATIVE HUB KELAS
+                    </div>
+
+                    <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-jet-900 leading-[1.08]">
+                        Desain Komunikasi Visual <span class="inline-block bg-lemon-300 border-2 border-jet-900 px-3 py-1 rounded-2xl shadow-brutal mt-1">Kelas DKV 3</span>
+                    </h1>
+
+                    <p class="text-neutral-800 font-medium text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed bg-lemon-100/90 p-4 rounded-2xl border-2 border-jet-900">
+                        Pusat informasi terintegrasi untuk manajemen struktur organisasi, transparansi kas kelas, jadwal pelajaran ganjil-genap, piket harian, hingga direktori lengkap 36 kreator muda DKV 3.
+                    </p>
+
+                    <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-1">
+                        <a href="#direktori" class="px-6 py-3.5 rounded-xl bg-jet-900 text-lemon-300 font-extrabold text-sm hover:bg-neutral-800 border-2 border-jet-900 shadow-brutal transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none flex items-center gap-2">
+                            <i class="fa-solid fa-clipboard-user"></i>
+                            Absensi & 36 Siswa
+                        </a>
+                        <a href="#jadwal" class="px-6 py-3.5 rounded-xl bg-lemon-300 hover:bg-lemon-400 text-jet-900 font-extrabold text-sm border-2 border-jet-900 shadow-brutal transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            Jadwal Pelajaran
+                        </a>
+                    </div>
+
+                    <!-- Quick Metrics Strip -->
+                    <div class="grid grid-cols-3 gap-3 sm:gap-4 pt-3 max-w-xl mx-auto lg:mx-0">
+                        <div class="bg-white rounded-2xl p-3.5 sm:p-4 border-2 border-jet-900 shadow-brutal-sm">
+                            <p class="text-[11px] font-extrabold uppercase tracking-wider text-neutral-600">Total Siswa</p>
+                            <p id="hero-student-count" class="font-display text-2xl sm:text-3xl font-bold text-jet-900 mt-0.5">36</p>
+                        </div>
+                        <div class="bg-lemon-300 rounded-2xl p-3.5 sm:p-4 border-2 border-jet-900 shadow-brutal-sm">
+                            <p class="text-[11px] font-extrabold uppercase tracking-wider text-jet-900">Kas Terkini</p>
+                            <p id="hero-kas-now" class="font-display text-xl sm:text-2xl font-bold text-jet-900 mt-1">Rp 3,01 Jt</p>
+                        </div>
+                        <div class="bg-jet-900 text-lemon-300 rounded-2xl p-3.5 sm:p-4 border-2 border-jet-900 shadow-brutal-sm">
+                            <p class="text-[11px] font-extrabold uppercase tracking-wider text-lemon-200/80">Kesepakatan</p>
+                            <p id="hero-rules-count" class="font-display text-2xl sm:text-3xl font-bold text-white mt-0.5">10</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Studio Showcase Card -->
+                <div class="lg:col-span-5">
+                    <div class="bg-jet-900 text-lemon-50 rounded-3xl p-6 sm:p-8 border-2 border-jet-900 shadow-brutal-lg relative">
+                        <div class="flex items-center justify-between border-b border-lemon-200/20 pb-4 mb-5">
+                            <div>
+                                <span class="text-[11px] font-extrabold uppercase tracking-widest text-lemon-300">STUDIO PROFILE</span>
+                                <h2 class="font-display text-xl font-bold text-white mt-0.5">Pengurus Inti DKV 3</h2>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-lemon-300 text-jet-900 text-xs font-extrabold">AKTIF</span>
+                        </div>
+
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center justify-between p-3 rounded-xl bg-jet-800 border border-lemon-200/15">
+                                <span class="text-lemon-200/80 font-medium">Wali Kelas</span>
+                                <span id="hero-wali-name" class="font-bold text-lemon-300">Roby Sandita</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-xl bg-jet-800 border border-lemon-200/15">
+                                <span class="text-lemon-200/80 font-medium">Ketua Kelas</span>
+                                <span id="hero-ketua-name" class="font-bold text-white">Shirazy Al Ghazali</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-xl bg-jet-800 border border-lemon-200/15">
+                                <span class="text-lemon-200/80 font-medium">Wakil Ketua</span>
+                                <span id="hero-wakil-name" class="font-bold text-white">Novita Adelia Putri</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-xl bg-jet-800 border border-lemon-200/15">
+                                <span class="text-lemon-200/80 font-medium">Sekretaris</span>
+                                <span id="hero-sekretaris-name" class="font-bold text-white">Fajri Malik Ibrahim</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-xl bg-jet-800 border border-lemon-200/15">
+                                <span class="text-lemon-200/80 font-medium">Bendahara</span>
+                                <span id="hero-bendahara-name" class="font-bold text-white">Siti Nasywa Kanaya</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 pt-4 border-t border-lemon-200/20 flex items-center justify-between">
+                            <span class="text-xs text-lemon-200/70 font-medium">Saldo Kas Terkini</span>
+                            <span id="hero-card-kas" class="font-display font-bold text-lg text-lemon-300">Rp 3.010.000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= DIREKTORI 36 SISWA & ABSENSI HARIAN ================= -->
+    <section id="direktori" class="py-16 md:py-24 bg-lemon-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+                <div>
+                    <span class="inline-block px-3 py-1 rounded-lg bg-jet-900 text-lemon-300 text-xs font-extrabold uppercase tracking-widest">Attendance & Student Database</span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-bold text-jet-900 mt-2">Absensi & Direktori Siswa DKV 3</h2>
+                    <p class="text-sm text-neutral-700 font-medium mt-1">Rekap kehadiran harian (Hadir, Izin, Alfa), daftar absensi resmi, NISN, dan data orang tua.</p>
+                </div>
+
+                <!-- Kontrol Tanggal Absensi & Tambah Siswa -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border-2 border-jet-900 shadow-brutal-sm">
+                        <i class="fa-regular fa-calendar text-jet-900 text-sm"></i>
+                        <label for="attendance-date" class="text-xs font-extrabold uppercase text-neutral-600">Tanggal:</label>
+                        <input type="date" id="attendance-date" onchange="changeAttendanceDate(this.value)" class="text-xs sm:text-sm font-extrabold text-jet-900 bg-transparent focus:outline-none cursor-pointer">
+                    </div>
+                    <button onclick="openStudentModal()" class="admin-only hidden inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-lemon-300 hover:bg-lemon-400 text-jet-900 border-2 border-jet-900 shadow-brutal-sm font-extrabold text-sm transition-all whitespace-nowrap">
+                        <i class="fa-solid fa-user-plus"></i> Tambah Siswa
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kartu Ringkasan Rekap Absensi Real-Time -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-jet-900 text-lemon-50 rounded-2xl p-4 sm:p-5 border-2 border-jet-900 shadow-brutal-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-extrabold uppercase tracking-wider text-lemon-200/80">Total Siswa</p>
+                        <p id="stat-absen-total" class="font-display text-2xl sm:text-3xl font-bold text-white mt-1">36</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-lemon-300 text-jet-900 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-300 text-jet-900 rounded-2xl p-4 sm:p-5 border-2 border-jet-900 shadow-brutal-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-extrabold uppercase tracking-wider text-jet-900/80">Hadir (H)</p>
+                        <p id="stat-absen-hadir" class="font-display text-2xl sm:text-3xl font-bold text-jet-900 mt-1">36</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-jet-900 text-emerald-300 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+                </div>
+
+                <div class="bg-amber-300 text-jet-900 rounded-2xl p-4 sm:p-5 border-2 border-jet-900 shadow-brutal-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-extrabold uppercase tracking-wider text-jet-900/80">Izin / Sakit (I)</p>
+                        <p id="stat-absen-izin" class="font-display text-2xl sm:text-3xl font-bold text-jet-900 mt-1">0</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-jet-900 text-amber-300 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                    </div>
+                </div>
+
+                <div class="bg-rose-400 text-jet-900 rounded-2xl p-4 sm:p-5 border-2 border-jet-900 shadow-brutal-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-extrabold uppercase tracking-wider text-jet-900/80">Alfa / Tanpa Ket. (A)</p>
+                        <p id="stat-absen-alfa" class="font-display text-2xl sm:text-3xl font-bold text-jet-900 mt-1">0</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-jet-900 text-rose-400 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-user-xmark"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bar Pencarian, Filter Status Kehadiran & Aksi Massal Admin -->
+            <div class="bg-lemon-200 rounded-2xl p-4 border-2 border-jet-900 shadow-brutal-sm mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <!-- Filter Pills Status Kehadiran -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs font-extrabold uppercase text-jet-900 mr-1">Filter Status:</span>
+                    <button onclick="setAttendanceFilter('ALL')" id="filter-absen-ALL" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-jet-900 text-lemon-300 border-2 border-jet-900 transition-all">
+                        Semua (36)
+                    </button>
+                    <button onclick="setAttendanceFilter('Hadir')" id="filter-absen-Hadir" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-white text-jet-900 hover:bg-emerald-200 border-2 border-jet-900 transition-all">
+                        Hadir
+                    </button>
+                    <button onclick="setAttendanceFilter('Izin')" id="filter-absen-Izin" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-white text-jet-900 hover:bg-amber-200 border-2 border-jet-900 transition-all">
+                        Izin
+                    </button>
+                    <button onclick="setAttendanceFilter('Alfa')" id="filter-absen-Alfa" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-white text-jet-900 hover:bg-rose-200 border-2 border-jet-900 transition-all">
+                        Alfa
+                    </button>
+                </div>
+
+                <!-- Search Input & Bulk Admin Actions -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                    <div class="relative min-w-[240px] sm:min-w-[280px]">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-jet-900 text-xs"></i>
+                        <input type="text" id="student-search" oninput="filterStudents()" placeholder="Cari nama, NISN, atau ayah..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-white border-2 border-jet-900 text-xs sm:text-sm font-semibold text-jet-900 placeholder-neutral-500 focus:outline-none focus:bg-lemon-50">
+                    </div>
+
+                    <!-- Tombol Aksi Massal Khusus Mode Admin -->
+                    <div class="admin-only hidden flex items-center gap-2">
+                        <button onclick="setAllAttendance('Hadir')" class="px-3.5 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-jet-900 border-2 border-jet-900 font-extrabold text-xs transition-all whitespace-nowrap" title="Tandai semua siswa Hadir">
+                            <i class="fa-solid fa-check-double mr-1"></i> Semua Hadir
+                        </button>
+                        <button onclick="resetAttendanceDate()" class="px-3.5 py-2 rounded-xl bg-white hover:bg-rose-100 text-jet-900 border-2 border-jet-900 font-extrabold text-xs transition-all whitespace-nowrap" title="Reset absensi tanggal ini">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Reset Absen
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="bg-white rounded-3xl overflow-hidden border-2 border-jet-900 shadow-brutal-lg">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b-2 border-jet-900 bg-jet-900 text-xs font-extrabold uppercase tracking-wider text-lemon-300">
+                                <th class="py-4 px-4 w-16 text-center">No</th>
+                                <th class="py-4 px-5 min-w-[340px]">
+                                    <div class="flex items-center justify-between gap-3">
+                                        <span>Nama Lengkap Siswa</span>
+                                        <span class="text-[11px] text-lemon-200">Hadir / Izin / Alfa</span>
+                                    </div>
+                                </th>
+                                <th class="py-4 px-4">NISN</th>
+                                <th class="py-4 px-4">Nama Ayah</th>
+                                <th class="py-4 px-5 text-right admin-only hidden">Kelola Data</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-table-body" class="divide-y-2 divide-jet-900/15 text-sm">
+                            <!-- Data 36 Siswa & Absensi dirender dinamis oleh JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty Search State -->
+                <div id="empty-search-state" class="hidden py-12 px-4 text-center bg-lemon-50">
+                    <div class="w-12 h-12 rounded-2xl bg-jet-900 text-lemon-300 flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-user-slash"></i>
+                    </div>
+                    <p class="text-jet-900 font-bold">Data siswa tidak ditemukan</p>
+                    <p class="text-xs text-neutral-600 font-medium mt-1">Coba ubah filter status kehadiran atau gunakan kata kunci pencarian yang berbeda.</p>
+                </div>
+
+                <!-- Table Footer -->
+                <div class="py-4 px-5 bg-lemon-200 border-t-2 border-jet-900 flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-jet-900">
+                    <span>Menampilkan <strong id="visible-count" class="bg-jet-900 text-lemon-300 px-2 py-0.5 rounded">36</strong> dari <strong id="total-count">36</strong> siswa terdaftar</span>
+                    <span id="footer-attendance-date-label">Rekap Absensi DKV 3 • Tahun Ajaran Aktif</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= DYNAMIC AGENCY MARQUEE TICKER ================= -->
+    <div class="bg-jet-900 text-lemon-300 border-y-2 border-jet-900 py-3 overflow-hidden select-none">
+        <div class="flex whitespace-nowrap animate-marquee font-display font-bold text-sm sm:text-base tracking-wider uppercase">
+            <span class="mx-6">✦ DESAIN KOMUNIKASI VISUAL 3</span>
+            <span class="mx-6 text-white">✦ WALI KELAS: ROBY SANDITA</span>
+            <span class="mx-6">✦ KREATIF • SOLID • DISIPLIN</span>
+            <span class="mx-6 text-white">✦ 36 SISWA BERBAKAT</span>
+            <span class="mx-6">✦ ABSEN PAGI JAM 06.45 WIB</span>
+            <span class="mx-6 text-white">✦ DKV 3 CREATIVE AGENCY</span>
+            <!-- Duplicate for seamless loop -->
+            <span class="mx-6">✦ DESAIN KOMUNIKASI VISUAL 3</span>
+            <span class="mx-6 text-white">✦ WALI KELAS: ROBY SANDITA</span>
+            <span class="mx-6">✦ KREATIF • SOLID • DISIPLIN</span>
+            <span class="mx-6 text-white">✦ 36 SISWA BERBAKAT</span>
+            <span class="mx-6">✦ ABSEN PAGI JAM 06.45 WIB</span>
+            <span class="mx-6 text-white">✦ DKV 3 CREATIVE AGENCY</span>
+        </div>
+    </div>
+
+    <!-- ================= STRUKTUR ORGANISASI KELAS ================= -->
+    <section id="struktur" class="py-16 md:py-24 bg-lemon-100 border-b-2 border-jet-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+                <div>
+                    <span class="inline-block px-3 py-1 rounded-lg bg-jet-900 text-lemon-300 text-xs font-extrabold uppercase tracking-widest">Leadership & Management</span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-bold text-jet-900 mt-2">Struktur Organisasi Kelas</h2>
+                </div>
+                <button onclick="openEditStrukturModal()" class="admin-only hidden inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-lemon-300 hover:bg-lemon-400 text-jet-900 border-2 border-jet-900 shadow-brutal-sm font-extrabold text-xs sm:text-sm transition-all">
+                    <i class="fa-solid fa-pen"></i> Edit Struktur Kelas
+                </button>
+            </div>
+
+            <!-- Wali Kelas Highlight Card -->
+            <div class="max-w-md mx-auto mb-10">
+                <div class="bg-jet-900 text-lemon-50 studio-card-dark rounded-3xl p-7 text-center relative overflow-hidden border-2 border-jet-900 shadow-brutal">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-lemon-300 text-jet-900 border-2 border-black flex items-center justify-center text-2xl mb-4 shadow-brutal-sm">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </div>
+                    <span class="inline-block px-3.5 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-lemon-300 text-jet-900 mb-2">
+                        Wali Kelas DKV 3
+                    </span>
+                    <h3 id="org-wali" class="font-display text-2xl sm:text-3xl font-bold text-white">Roby Sandita</h3>
+                    <p class="text-xs text-lemon-200/80 mt-1.5 font-medium">Pembimbing Akademik & Studio Kreatif</p>
+                </div>
+            </div>
+
+            <!-- Pengurus Inti Grid (4 Cards) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Ketua Kelas -->
+                <div class="bg-white studio-card rounded-2xl p-6 border-2 border-jet-900 shadow-brutal relative">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-lemon-300 border-2 border-jet-900 flex items-center justify-center text-jet-900 text-lg">
+                            <i class="fa-solid fa-crown"></i>
+                        </div>
+                        <span class="font-display font-bold text-sm px-2.5 py-0.5 rounded-md bg-jet-900 text-lemon-300">01</span>
+                    </div>
+                    <p class="text-xs font-extrabold uppercase tracking-wider text-neutral-600">Ketua Kelas</p>
+                    <h3 id="org-ketua" class="font-display text-xl font-bold text-jet-900 mt-1">Shirazy Al Ghazali</h3>
+                    <p class="text-xs text-neutral-600 font-medium mt-2">Koordinator Utama & Perwakilan Kelas</p>
+                </div>
+
+                <!-- Wakil Ketua -->
+                <div class="bg-lemon-200 studio-card rounded-2xl p-6 border-2 border-jet-900 shadow-brutal relative">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-jet-900 border-2 border-jet-900 flex items-center justify-center text-lemon-300 text-lg">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <span class="font-display font-bold text-sm px-2.5 py-0.5 rounded-md bg-white text-jet-900 border border-jet-900">02</span>
+                    </div>
+                    <p class="text-xs font-extrabold uppercase tracking-wider text-neutral-800">Wakil Ketua Kelas</p>
+                    <h3 id="org-wakil" class="font-display text-xl font-bold text-jet-900 mt-1">Novita Adelia Putri</h3>
+                    <p class="text-xs text-neutral-800 font-medium mt-2">Pendamping Koordinasi & Operasional</p>
+                </div>
+
+                <!-- Sekretaris -->
+                <div class="bg-white studio-card rounded-2xl p-6 border-2 border-jet-900 shadow-brutal relative">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-lemon-300 border-2 border-jet-900 flex items-center justify-center text-jet-900 text-lg">
+                            <i class="fa-solid fa-file-signature"></i>
+                        </div>
+                        <span class="font-display font-bold text-sm px-2.5 py-0.5 rounded-md bg-jet-900 text-lemon-300">03</span>
+                    </div>
+                    <p class="text-xs font-extrabold uppercase tracking-wider text-neutral-600">Sekretaris</p>
+                    <h3 id="org-sekretaris" class="font-display text-xl font-bold text-jet-900 mt-1">Fajri Malik</h3>
+                    <p class="text-xs text-neutral-600 font-medium mt-2">Administrasi, Absensi & Notulensi</p>
+                </div>
+
+                <!-- Bendahara -->
+                <div class="bg-lemon-200 studio-card rounded-2xl p-6 border-2 border-jet-900 shadow-brutal relative">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-jet-900 border-2 border-jet-900 flex items-center justify-center text-lemon-300 text-lg">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                        <span class="font-display font-bold text-sm px-2.5 py-0.5 rounded-md bg-white text-jet-900 border border-jet-900">04</span>
+                    </div>
+                    <p class="text-xs font-extrabold uppercase tracking-wider text-neutral-800">Bendahara</p>
+                    <h3 id="org-bendahara" class="font-display text-xl font-bold text-jet-900 mt-1">Siti Nasywa Kanaya</h3>
+                    <p class="text-xs text-neutral-800 font-medium mt-2">Manajemen Keuangan & Kas Kelas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= KEUANGAN & UANG KAS KELAS (DARK SECTION) ================= -->
+    <section id="keuangan" class="py-16 md:py-24 bg-jet-900 bg-dark-grid text-lemon-50 border-b-2 border-jet-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+                <div>
+                    <span class="inline-block px-3 py-1 rounded-lg bg-lemon-300 text-jet-900 text-xs font-extrabold uppercase tracking-widest">Financial Transparency</span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-2">Transparansi Uang Kas Kelas</h2>
+                </div>
+                <button onclick="openEditKasModal()" class="admin-only hidden inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-lemon-300 hover:bg-lemon-400 text-jet-900 font-extrabold text-xs sm:text-sm transition-all shadow-brutal-yellow">
+                    <i class="fa-solid fa-coins"></i> Kelola / Edit Kas
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Stat Card 1: Kas September -->
+                <div class="lg:col-span-5 bg-jet-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between border-2 border-lemon-200/25 shadow-brutal-yellow">
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="px-3.5 py-1 rounded-full text-xs font-extrabold uppercase bg-lemon-200/15 text-lemon-200 border border-lemon-200/30">
+                                Arsip Periode Awal
+                            </span>
+                            <div class="w-11 h-11 rounded-xl bg-lemon-300 text-jet-900 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-calendar-check text-lg"></i>
+                            </div>
+                        </div>
+                        <p class="text-lemon-100/70 text-sm font-medium mt-6">Total Uang Kas Bulan September</p>
+                        <h3 id="kas-september-display" class="font-display text-3xl sm:text-4xl font-bold text-white mt-2">
+                            Rp 1.218.000
+                        </h3>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-lemon-200/15 flex items-center justify-between text-xs text-lemon-100/70">
+                        <span>Dikelola oleh Bendahara</span>
+                        <span class="text-lemon-300 font-bold">Tercatat Resmi</span>
+                    </div>
+                </div>
+
+                <!-- Stat Card 2: Total Kas Sekarang -->
+                <div class="lg:col-span-7 bg-lemon-300 text-jet-900 rounded-3xl p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden border-2 border-black shadow-brutal-yellow">
+                    <div>
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="px-3.5 py-1 rounded-full text-xs font-extrabold uppercase bg-jet-900 text-lemon-300 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-lemon-300 animate-ping"></span>
+                                Saldo Aktif Terkini
+                            </span>
+                            <span id="kas-growth-badge" class="px-3.5 py-1 rounded-full text-xs font-extrabold bg-white text-jet-900 border-2 border-jet-900">
+                                +Rp 1.792.000 dari Sept
+                            </span>
+                        </div>
+                        <p class="text-neutral-800 text-sm font-bold mt-6">Total Uang Kas Kelas Sekarang</p>
+                        <h3 id="kas-sekarang-display" class="font-display text-4xl sm:text-5xl font-bold text-jet-900 mt-1">
+                            Rp 3.010.000
+                        </h3>
+                    </div>
+
+                    <!-- Riwayat Transaksi / Catatan Kas Singkat -->
+                    <div class="mt-6 pt-4 border-t-2 border-jet-900/20">
+                        <div class="flex items-center justify-between mb-2.5">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-jet-900">Mutasi & Catatan Kas Terbaru</span>
+                            <span class="text-xs font-bold text-neutral-800">Bendahara: Siti Nasywa Kanaya</span>
+                        </div>
+                        <div id="kas-logs-list" class="space-y-2 max-h-28 overflow-y-auto pr-1 text-xs">
+                            <!-- Diisi via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= JADWAL PELAJARAN & JADWAL PIKET ================= -->
+    <section id="jadwal" class="py-16 md:py-24 bg-lemon-50 border-b-2 border-jet-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Bagian A: Jadwal Pelajaran (Ganjil / Genap) -->
+            <div class="mb-20">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-lg bg-jet-900 text-lemon-300 text-xs font-extrabold uppercase tracking-widest">Academic Timetable</span>
+                        <h2 class="font-display text-3xl sm:text-4xl font-bold text-jet-900 mt-2">Jadwal Pelajaran DKV 3</h2>
+                    </div>
+
+                    <!-- Switcher Tab Ganjil & Genap -->
+                    <div class="inline-flex p-1.5 rounded-2xl bg-white border-2 border-jet-900 shadow-brutal-sm self-start md:self-auto">
+                        <button id="tab-ganjil" onclick="switchScheduleTab('ganjil')" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all bg-jet-900 text-lemon-300">
+                            Minggu Ganjil
+                        </button>
+                        <button id="tab-genap" onclick="switchScheduleTab('genap')" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all text-jet-900 hover:bg-lemon-200">
+                            Minggu Genap
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grid Jadwal Pelajaran (Senin - Jumat) -->
+                <div id="schedule-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+                    <!-- Dirender dinamis oleh JavaScript -->
+                </div>
+            </div>
+
+            <!-- Bagian B: Jadwal Piket Kelas -->
+            <div>
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-lg bg-lemon-300 text-jet-900 border border-jet-900 text-xs font-extrabold uppercase tracking-widest">Cleanliness & Duty Roster</span>
+                        <h2 class="font-display text-3xl sm:text-4xl font-bold text-jet-900 mt-2">Jadwal Piket Harian</h2>
+                        <p class="text-xs sm:text-sm text-neutral-700 font-medium mt-1">Catatan: Tidak piket dikenakan denda <span class="bg-jet-900 text-lemon-300 px-1.5 py-0.5 rounded font-bold">Rp 5.000</span> & tidak mengangkat kursi denda <span class="bg-jet-900 text-lemon-300 px-1.5 py-0.5 rounded font-bold">Rp 2.000</span>.</p>
+                    </div>
+                </div>
+
+                <div id="piket-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+                    <!-- Dirender dinamis oleh JavaScript -->
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ================= KESEPAKATAN KELAS (10 POIN) ================= -->
+    <section id="kesepakatan" class="py-16 md:py-24 bg-lemon-200 border-b-2 border-jet-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+                <div>
+                    <span class="inline-block px-3 py-1 rounded-lg bg-jet-900 text-lemon-300 text-xs font-extrabold uppercase tracking-widest">Class Manifesto & Rules</span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-bold text-jet-900 mt-2">Kesepakatan Kelas DKV 3</h2>
+                </div>
+                <button onclick="openAddRuleModal()" class="admin-only hidden inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-jet-900 hover:bg-neutral-800 text-lemon-300 font-extrabold text-xs sm:text-sm transition-all shadow-brutal-sm">
+                    <i class="fa-solid fa-plus"></i> Tambah Kesepakatan
+                </button>
+            </div>
+
+            <div id="rules-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 10 Kesepakatan Kelas dirender dinamis oleh JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="border-t-2 border-jet-900 bg-jet-900 text-lemon-50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-lemon-300 text-jet-900 flex items-center justify-center font-display font-bold text-lg">D3</div>
+                <div>
+                    <p class="font-display font-bold text-white text-base">DKV 3 Creative Studio</p>
+                    <p class="text-xs text-lemon-200/80">Wali Kelas: Roby Sandita • Portal Informasi Resmi</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-lemon-200">
+                <a href="#struktur" class="hover:text-lemon-300 transition-colors">Struktur</a>
+                <span>•</span>
+                <a href="#keuangan" class="hover:text-lemon-300 transition-colors">Kas Kelas</a>
+                <span>•</span>
+                <a href="#jadwal" class="hover:text-lemon-300 transition-colors">Jadwal</a>
+                <span>•</span>
+                <a href="#kesepakatan" class="hover:text-lemon-300 transition-colors">Kesepakatan</a>
+                <span>•</span>
+                <a href="#direktori" class="hover:text-lemon-300 transition-colors">Siswa</a>
+            </div>
+            <p class="text-xs text-neutral-400 font-medium">&copy; 2026 Kelas DKV 3. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- 1. Modal Login Admin (Sandi: 2010) -->
+    <div id="modal-admin-login" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-lemon-50 rounded-3xl max-w-md w-full p-6 sm:p-8 border-2 border-jet-900 shadow-brutal-yellow">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-jet-900 text-lemon-300 flex items-center justify-center">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-xl text-jet-900">Akses Mode Admin</h3>
+                        <p class="text-xs font-semibold text-neutral-600">Masukkan sandi pengurus DKV 3</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('modal-admin-login')" class="w-9 h-9 rounded-xl bg-white border-2 border-jet-900 text-jet-900 hover:bg-lemon-300 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="submitAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-jet-900 mb-2">Kata Sandi Admin</label>
+                    <input type="password" id="admin-password-input" placeholder="••••" class="w-full px-4 py-3.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 text-center font-mono font-bold text-xl tracking-widest focus:outline-none focus:bg-lemon-100" required>
+                    <p id="admin-login-error" class="hidden text-xs font-bold text-rose-600 mt-2 text-center"><i class="fa-solid fa-circle-exclamation mr-1"></i> Sandi salah! Silakan coba lagi.</p>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-jet-900 hover:bg-neutral-800 text-lemon-300 font-extrabold text-sm transition-all shadow-brutal-sm">
+                    Masuk ke Mode Admin
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Modal Edit Struktur Organisasi -->
+    <div id="modal-edit-struktur" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-lemon-50 rounded-3xl max-w-lg w-full p-6 sm:p-8 border-2 border-jet-900 shadow-brutal-yellow">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-display font-bold text-xl text-jet-900">Edit Struktur Organisasi</h3>
+                <button onclick="closeModal('modal-edit-struktur')" class="w-9 h-9 rounded-xl bg-white border-2 border-jet-900 text-jet-900 hover:bg-lemon-300 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="saveStruktur(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-extrabold uppercase text-jet-900 mb-1">Wali Kelas</label>
+                    <input type="text" id="input-wali" class="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 font-semibold text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold uppercase text-jet-900 mb-1">Ketua Kelas</label>
+                    <input type="text" id="input-ketua" class="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 font-semibold text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold uppercase text-jet-900 mb-1">Wakil Ketua Kelas</label>
+                    <input type="text" id="input-wakil" class="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 font-semibold text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold uppercase text-jet-900 mb-1">Sekretaris</label>
+                    <input type="text" id="input-sekretaris" class="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 font-semibold text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold uppercase text-jet-900 mb-1">Bendahara</label>
+                    <input type="text" id="input-bendahara" class="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 font-semibold text-sm" required>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('modal-edit-struktur')" class="px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 text-sm font-bold">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-jet-900 text-lemon-300 text-sm font-extrabold shadow-brutal-sm">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. Modal Edit Uang Kas -->
+    <div id="modal-edit-kas" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-lemon-50 rounded-3xl max-w-lg w-full p-6 sm:p-8 border-2 border-jet-900 shadow-brutal-yellow">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-display font-bold text-xl text-jet-900">Kelola Keuangan & Uang Kas</h3>
+                <button onclick="closeModal('modal-edit-kas')" class="w-9 h-9 rounded-xl bg-white border-2 border-jet-900 text-jet-900 hover:bg-lemon-300 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="saveKas(event)" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase text-jet-900 mb-1">Kas September (Rp)</label>
+                        <input type="number" id="input-kas-sept" class="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 font-bold text-sm" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase text-jet-900 mb-1">Total Kas Sekarang (Rp)</label>
+                        <input type="number" id="input-kas-now" class="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 font-bold text-sm" required>
+                    </div>
+                </div>
+                <div class="pt-2 border-t-2 border-jet-900/15">
+                    <label class="block text-xs font-extrabold uppercase text-jet-900 mb-1">Tambah Catatan Mutasi Baru (Opsional)</label>
+                    <input type="text" id="input-kas-note" placeholder="Contoh: Pemasukan kas mingguan +Rp 150.000" class="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 text-sm">
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('modal-edit-kas')" class="px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 text-sm font-bold">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-jet-900 text-lemon-300 text-sm font-extrabold shadow-brutal-sm">Simpan Kas</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. Modal Tambah / Edit Siswa -->
+    <div id="modal-student" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-lemon-50 rounded-3xl max-w-lg w-full p-6 sm:p-8 border-2 border-jet-900 shadow-brutal-yellow">
+            <div class="flex items-center justify-between mb-6">
+                <h3 id="modal-student-title" class="font-display font-bold text-xl text-jet-900">Tambah Siswa Baru</h3>
+                <button onclick="closeModal('modal-student')" class="w-9 h-9 rounded-xl bg-white border-2 border-jet-900 text-jet-900 hover:bg-lemon-300 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="saveStudent(event)" class="space-y-4">
+                <input type="hidden" id="edit-student-index" value="-1">
+                <div>
+                    <label class="block text-xs font-extrabold uppercase text-jet-900 mb-1">Nama Lengkap Siswa</label>
+                    <input type="text" id="input-student-name" class="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 font-semibold text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold uppercase text-jet-900 mb-1">NISN</label>
+                    <input type="text" id="input-student-nisn" class="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 font-mono font-bold text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold uppercase text-jet-900 mb-1">Nama Ayah</label>
+                    <input type="text" id="input-student-father" class="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 font-semibold text-sm" required>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('modal-student')" class="px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 text-sm font-bold">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-jet-900 text-lemon-300 text-sm font-extrabold shadow-brutal-sm">Simpan Data Siswa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. Modal Tambah Kesepakatan Kelas -->
+    <div id="modal-rule" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-lemon-50 rounded-3xl max-w-lg w-full p-6 sm:p-8 border-2 border-jet-900 shadow-brutal-yellow">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-display font-bold text-xl text-jet-900">Tambah Kesepakatan Kelas</h3>
+                <button onclick="closeModal('modal-rule')" class="w-9 h-9 rounded-xl bg-white border-2 border-jet-900 text-jet-900 hover:bg-lemon-300 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="saveNewRule(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-extrabold uppercase text-jet-900 mb-1">Isi Peraturan / Kesepakatan</label>
+                    <textarea id="input-new-rule" rows="3" placeholder="Tulis poin kesepakatan kelas..." class="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 font-medium text-sm" required></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('modal-rule')" class="px-4 py-2.5 rounded-xl bg-white border-2 border-jet-900 text-jet-900 text-sm font-bold">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-jet-900 text-lemon-300 text-sm font-extrabold shadow-brutal-sm">Tambahkan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // --- 1. DATA DEFAULT LENGKAP DKV 3 ---
+        const DEFAULT_DATA = {
+            struktur: {
+                wali: "Roby Sandita",
+                ketua: "Shirazy Al Ghazali",
+                wakil: "Novita Adelia Putri",
+                sekretaris: "Fajri Malik Ibrahim",
+                bendahara: "Siti Nasywa Kanaya"
+            },
+            kas: {
+        // --- 2. STATE MANAGEMENT & SAFE MIGRATION ---
+        function loadSafeAppData() {
+            const fallback = JSON.parse(JSON.stringify(DEFAULT_DATA));
+            try {
+                const raw = localStorage.getItem('dkv3_portal_yellow_black') ||
+                            localStorage.getItem('dkv3_portal_data_v2') ||
+                            localStorage.getItem('dkv3_portal_data_v1');
+                if (!raw) return fallback;
+
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed !== 'object') return fallback;
+
+                // Pastikan array siswa selalu valid & tidak kosong
+                const validSiswa = Array.isArray(parsed.siswa) && parsed.siswa.length > 0
+                    ? parsed.siswa
+                    : (Array.isArray(parsed.students) && parsed.students.length > 0 ? parsed.students : fallback.siswa);
+
+                return {
+                    struktur: parsed.struktur && parsed.struktur.wali ? parsed.struktur : fallback.struktur,
+                    kas: parsed.kas && typeof parsed.kas.sekarang === 'number' ? parsed.kas : fallback.kas,
+                    jadwal: parsed.jadwal && parsed.jadwal.ganjil ? parsed.jadwal : fallback.jadwal,
+                    piket: Array.isArray(parsed.piket) && parsed.piket.length > 0 ? parsed.piket : fallback.piket,
+                    kesepakatan: Array.isArray(parsed.kesepakatan) && parsed.kesepakatan.length > 0 ? parsed.kesepakatan : fallback.kesepakatan,
+                    siswa: validSiswa,
+                    absensiByDate: parsed.absensiByDate && typeof parsed.absensiByDate === 'object' ? parsed.absensiByDate : {}
+                };
+            } catch (err) {
+                return fallback;
+            }
+        }
+
+        let appData = loadSafeAppData();
+        let isAdmin = localStorage.getItem('dkv3_is_admin') === 'true';
+        let currentScheduleTab = 'ganjil';
+        let currentAttendanceDate = new Date().toISOString().split('T')[0];
+        let currentAttendanceFilter = 'ALL';
+
+        function saveState() {
+            localStorage.setItem('dkv3_portal_yellow_black', JSON.stringify(appData));
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+                ],
+                genap: [
+                    {
+                        hari: "Senin",
+                        mapel: [
+                            { nama: "B.ING", jam: "07.40 - 09.00" },
+                            { nama: "PJOK", jam: "10.00 - 12.00" },
+                            { nama: "B.INDO", jam: "12.50 - 15.30" }
+                        ]
+                    },
+                    {
+                        hari: "Selasa",
+                        mapel: [
+                            { nama: "B.INDO", jam: "07.00 - 09.40" },
+                            { nama: "MTK", jam: "10.00 - 13.30" },
+                            { nama: "PAI", jam: "13.30 - 15.30" }
+                        ]
+                    },
+                    {
+                        hari: "Rabu",
+                        mapel: [
+                            { nama: "B.INDO", jam: "07.00 - 09.40" },
+                            { nama: "PKN", jam: "10.00 - 11.20" },
+                            { nama: "SBDY", jam: "11.20 - 13.30" },
+                            { nama: "B.ING", jam: "13.30 - 14.50" }
+                        ]
+                    },
+                    {
+                        hari: "Kamis",
+                        mapel: [
+                            { nama: "PKN", jam: "07.40 - 09.00" },
+                            { nama: "PJOK", jam: "09.00 - 11.20" },
+                            { nama: "SBDY", jam: "11.20 - 13.30" },
+                            { nama: "B.ING", jam: "13.30 - 15.30" }
+                        ]
+                    },
+                    {
+                        hari: "Jumat",
+                        mapel: [
+                            { nama: "SI", jam: "07.40 - 09.00" },
+                            { nama: "PAI", jam: "09.00 - 11.20" },
+                            { nama: "BK", jam: "11.20 - 12.00" }
+                        ]
+                    }
+                ]
+            },
+            piket: [
+                { hari: "Senin", anggota: ["Mesyha", "Luffy", "Chievo", "Nasywa", "Khayla", "Lila", "Razy"] },
+                { hari: "Selasa", anggota: ["Ubai", "Rina", "Ridho", "Naura", "Zira", "Ajeng", "Fajri", "Sri Rahayu"] },
+                { hari: "Rabu", anggota: ["Rayhan", "Alfin", "Habibah", "Ade", "Nadya", "Keyrel", "Wawa", "Luna"] },
+                { hari: "Kamis", anggota: ["Rafif", "Daffa", "Keisya", "Elisa", "Jessica", "Abidzar", "Azriel"] },
+                { hari: "Jumat", anggota: ["Dhafi", "Andi", "Aprilia", "Novita", "Sartika", "Silver", "Azri"] }
+            ],
+            kesepakatan: [
+                "Dilarang membawa anak kelas lain kecuali diizinkan Bapak.",
+                "Air galon hanya digunakan anggota kelas.",
+                "Tidak boleh keluar kelas di jam pelajaran, ada guru maupun tidak.",
+                "Melakukan absen dan baris jam 06.45, absen pulang dengan guru jam pelajaran terakhir. Selain jam 06.45, absen sebelum baris.",
+                "Istirahat jam 09.40-10.00 dan 12.00-12.50 (wajib shalat).",
+                "Maksimal 2 orang yang ada di pintu.",
+                "Membuang sampah yang ada di atas dan di kolong meja sebelum pulang.",
+                "Mengumpulkan HP saat absen kecuali MPK atau yang diizinkan Pak Robi.",
+                "Tidak piket dikenakan denda Rp 5.000 dan tidak mengangkat kursi didenda Rp 2.000.",
+                "Tidak ada yang berbicara saat guru sudah di kelas."
+            ],
+            siswa: [
+                { nama: "Ade Rezeki", nisn: "0118264271", ayah: "MISWAN" },
+                { nama: "Ananda Ridho Ardana", nisn: "0117023953", ayah: "Salimi ak" },
+                { nama: "Andi Parhansyah", nisn: "3105501613", ayah: "Fahrul rozi" },
+                { nama: "Andi Azzam Ubaidillah Salimi", nisn: "0111829507", ayah: "FERRI FADLY" },
+                { nama: "Aprilia Sari", nisn: "0107790627", ayah: "Zulkifli" },
+                { nama: "Azaria Febri Khaila", nisn: "0115314076", ayah: "M.ISHAK" },
+                { nama: "Azriel Gazali Azrea", nisn: "0103029154", ayah: "Sa'adi" },
+                { nama: "Chievo Ramdhan", nisn: "0104896199", ayah: "Priyono" },
+                { nama: "Daffarya Rinaufal", nisn: "0102506779", ayah: "Manto" },
+                { nama: "Diajeng Marsyah Catur Putri Zakaria", nisn: "0113025845", ayah: "HASANUSI" },
+                { nama: "Elisa Nur Rahmania", nisn: "0104219855", ayah: "Fahrul rozi" },
+                { nama: "Fahama Nasywa R", nisn: "0117736935", ayah: "Muhammad Daud" },
+                { nama: "Fajri Malik Ibrahim", nisn: "01075489082", ayah: "Misnan" },
+                { nama: "Habibah Wafiah", nisn: "01181811458", ayah: "INDAWAN PUTRA" },
+                { nama: "Jesika Okta Viola", nisn: "0108661529", ayah: "Sumanto" },
+                { nama: "Keysha Jelian Nur Afika", nisn: "0109739822", ayah: "Syahrial Ramli" },
+                { nama: "Keyrell Oliviona", nisn: "0105212124", ayah: "ANDI THAMRIN" },
+                { nama: "Khayla Febrianti", nisn: "0109138010", ayah: "Yanuardy irawan" },
+                { nama: "Kza Sartika", nisn: "0103012498", ayah: "Sutikno" },
+                { nama: "Luffy Akilah Alhaqi", nisn: "0105556353", ayah: "Deni febriantoni" },
+                { nama: "Luna Fardillah", nisn: "0101869842", ayah: "Amal jamaludin" },
+                { nama: "M Azri Zas Fatikaran Akbar", nisn: "300107454402", ayah: "pujianto" },
+                { nama: "Meysha Febrianti", nisn: "3114895449", ayah: "081277432226" },
+                { nama: "Muhammad Abidzar Algifari", nisn: "0111599000", ayah: "Saiful Anwar" },
+                { nama: "Muhammad Alfin", nisn: "0112543358", ayah: "KAMAL UDIN" },
+                { nama: "Muhammad Dhafi Denofan", nisn: "0106973800", ayah: "kasiron" },
+                { nama: "Nadya Zahira", nisn: "0118158103", ayah: "Risman" },
+                { nama: "Naura Salsabilla Arsya Pamella", nisn: "0119628267", ayah: "AZUAR" },
+                { nama: "Novita Adelia Putri", nisn: "0102956554", ayah: "Sumantri Adiyanto" },
+                { nama: "Rafif Haidar", nisn: "0117889628", ayah: "Muruli s/o thiagarajan" },
+                { nama: "Reyhan Dermawan", nisn: "0103169932", ayah: "RAHMAN" },
+                { nama: "Shaffiyah Nur Fajarina", nisn: "0118274546", ayah: "Sunardi" },
+                { nama: "Shirazy Al Ghazali", nisn: "0081686653", ayah: "SUNARDI" },
+                { nama: "Silver Algeciras Fiori", nisn: "0104794611", ayah: "adi mulyadi" },
+                { nama: "Siti Nasywa Kanaya", nisn: "0109905824", ayah: "Zakaria" },
+                { nama: "Sri Rahayu", nisn: "0096816384", ayah: "Jeje / Susandi" }
+            ],
+            absensiByDate: {}
+        };
+
+        // --- 2. STATE MANAGEMENT ---
+        let appData = JSON.parse(localStorage.getItem('dkv3_portal_yellow_black')) || JSON.parse(JSON.stringify(DEFAULT_DATA));
+        if (!appData.absensiByDate) appData.absensiByDate = {};
+        let isAdmin = localStorage.getItem('dkv3_is_admin') === 'true';
+        let currentScheduleTab = 'ganjil';
+        let currentAttendanceDate = new Date().toISOString().split('T')[0];
+        let currentAttendanceFilter = 'ALL';
+
+        function saveState() {
+            localStorage.setItem('dkv3_portal_yellow_black', JSON.stringify(appData));
+        }
+
+        function getTodayAttendanceMap() {
+            if (!appData.absensiByDate[currentAttendanceDate]) {
+                appData.absensiByDate[currentAttendanceDate] = {};
+            }
+            return appData.absensiByDate[currentAttendanceDate];
+        }
+
+        function getStudentStatus(nisn) {
+            const map = getTodayAttendanceMap();
+            return map[nisn] || 'Hadir';
+        }
+
+        function formatRupiah(angka) {
+            return 'Rp ' + Number(angka).toLocaleString('id-ID');
+        }
+
+        // --- 3. RENDER FUNCTIONS ---
+        function renderAll() {
+            renderStruktur();
+            renderKas();
+            renderJadwal();
+            renderPiket();
+            renderRules();
+            renderStudents();
+            updateAdminUI();
+        }
+
+        function renderStruktur() {
+            const s = appData.struktur;
+            document.getElementById('org-wali').textContent = s.wali;
+            document.getElementById('org-ketua').textContent = s.ketua;
+            document.getElementById('org-wakil').textContent = s.wakil;
+            document.getElementById('org-sekretaris').textContent = s.sekretaris;
+            document.getElementById('org-bendahara').textContent = s.bendahara;
+
+            // Update Hero Showcase
+            document.getElementById('hero-wali-name').textContent = s.wali;
+            document.getElementById('hero-ketua-name').textContent = s.ketua;
+            document.getElementById('hero-wakil-name').textContent = s.wakil;
+            document.getElementById('hero-sekretaris-name').textContent = s.sekretaris;
+            document.getElementById('hero-bendahara-name').textContent = s.bendahara;
+        }
+
+        function renderKas() {
+            const sept = Number(appData.kas.september);
+            const now = Number(appData.kas.sekarang);
+            const diff = now - sept;
+
+            document.getElementById('kas-september-display').textContent = formatRupiah(sept);
+            document.getElementById('kas-sekarang-display').textContent = formatRupiah(now);
+            document.getElementById('hero-card-kas').textContent = formatRupiah(now);
+
+            const juta = (now / 1000000).toFixed(2).replace('.', ',');
+            document.getElementById('hero-kas-now').textContent = `Rp ${juta} Jt`;
+
+            const badge = document.getElementById('kas-growth-badge');
+            if (diff >= 0) {
+                badge.textContent = `+${formatRupiah(diff)} dari Sept`;
+                badge.className = "px-3.5 py-1 rounded-full text-xs font-extrabold bg-white text-jet-900 border-2 border-jet-900";
+            } else {
+                badge.textContent = `${formatRupiah(diff)} dari Sept`;
+                badge.className = "px-3.5 py-1 rounded-full text-xs font-extrabold bg-rose-600 text-white border-2 border-jet-900";
+            }
+
+            const logsContainer = document.getElementById('kas-logs-list');
+            logsContainer.innerHTML = appData.kas.logs.map(log => `
+                <div class="flex items-center justify-between py-2 px-3 rounded-xl bg-white/80 border border-jet-900">
+                    <span class="text-jet-900 font-semibold truncate pr-2">${log.text}</span>
+                    <span class="font-mono font-extrabold text-jet-900 bg-lemon-100 px-2 py-0.5 rounded border border-jet-900 whitespace-nowrap">${log.amount}</span>
+                </div>
+            `).join('');
+        }
+
+        function switchScheduleTab(tab) {
+            currentScheduleTab = tab;
+            const btnGanjil = document.getElementById('tab-ganjil');
+            const btnGenap = document.getElementById('tab-genap');
+
+            if (tab === 'ganjil') {
+                btnGanjil.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all bg-jet-900 text-lemon-300";
+                btnGenap.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all text-jet-900 hover:bg-lemon-200";
+            } else {
+                btnGenap.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all bg-jet-900 text-lemon-300";
+                btnGanjil.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all text-jet-900 hover:bg-lemon-200";
+            }
+            renderJadwal();
+        }
+
+        function renderJadwal() {
+            const list = appData.jadwal[currentScheduleTab];
+            const grid = document.getElementById('schedule-grid');
+            const isGanjil = currentScheduleTab === 'ganjil';
+
+            grid.innerHTML = list.map(dayObj => `
+                <div class="bg-white studio-card rounded-2xl p-5 flex flex-col justify-between border-2 border-jet-900 shadow-brutal">
+                    <div>
+                        <div class="flex items-center justify-between pb-3 mb-4 border-b-2 border-jet-900">
+                            <h3 class="font-display font-bold text-xl text-jet-900">${dayObj.hari}</h3>
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-md ${isGanjil ? 'bg-jet-900 text-lemon-300' : 'bg-lemon-300 text-jet-900 border border-jet-900'}">
+                                ${currentScheduleTab}
+                            </span>
+                        </div>
+                        <div class="space-y-3">
+                            ${dayObj.mapel.map(m => `
+                                <div class="p-3 rounded-xl bg-lemon-100 border border-jet-900">
+                                    <p class="font-display font-bold text-base text-jet-900">${m.nama}</p>
+                                    <p class="text-xs font-bold text-neutral-700 mt-1 flex items-center gap-1.5">
+                                        <i class="fa-regular fa-clock text-jet-900"></i>
+                                        ${m.jam}
+                                    </p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPiket() {
+            const grid = document.getElementById('piket-grid');
+            grid.innerHTML = appData.piket.map(item => `
+                <div class="bg-jet-900 text-lemon-50 studio-card-dark rounded-2xl p-5 border-2 border-jet-900 shadow-brutal">
+                    <div class="flex items-center justify-between pb-3 mb-4 border-b border-lemon-200/20">
+                        <h3 class="font-display font-bold text-xl text-lemon-300">${item.hari}</h3>
+                        <span class="w-7 h-7 rounded-lg bg-lemon-300 text-jet-900 text-xs font-extrabold flex items-center justify-center">
+                            ${item.anggota.length}
+                        </span>
+                    </div>
+                    <ul class="space-y-2">
+                        ${item.anggota.map(nama => `
+                            <li class="flex items-center gap-2.5 text-sm font-medium text-white">
+                                <span class="w-2 h-2 rounded-full bg-lemon-300"></span>
+                                <span>${nama}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+
+        function renderRules() {
+            const grid = document.getElementById('rules-grid');
+            document.getElementById('hero-rules-count').textContent = appData.kesepakatan.length;
+            grid.innerHTML = appData.kesepakatan.map((rule, idx) => `
+                <div class="bg-white studio-card rounded-2xl p-4 sm:p-5 flex items-start justify-between gap-4 border-2 border-jet-900 shadow-brutal-sm">
+                    <div class="flex items-start gap-4">
+                        <span class="flex-shrink-0 w-9 h-9 rounded-xl bg-jet-900 text-lemon-300 font-display font-bold text-sm flex items-center justify-center">
+                            ${idx + 1}
+                        </span>
+                        <p class="text-sm font-semibold text-jet-900 leading-relaxed pt-1">${rule}</p>
+                    </div>
+                    <button onclick="deleteRule(${idx})" class="admin-only ${isAdmin ? '' : 'hidden'} bg-rose-500 text-white p-2 rounded-lg border border-jet-900 hover:bg-rose-600 transition-colors" title="Hapus aturan">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function updateAttendanceStats() {
+            let hadir = 0, izin = 0, alfa = 0;
+            appData.siswa.forEach(s => {
+                const st = getStudentStatus(s.nisn);
+                if (st === 'Hadir') hadir++;
+                else if (st === 'Izin') izin++;
+                else if (st === 'Alfa') alfa++;
+            });
+
+            document.getElementById('stat-absen-total').textContent = appData.siswa.length;
+            document.getElementById('stat-absen-hadir').textContent = hadir;
+            document.getElementById('stat-absen-izin').textContent = izin;
+            document.getElementById('stat-absen-alfa').textContent = alfa;
+
+            document.getElementById('filter-absen-ALL').textContent = `Semua (${appData.siswa.length})`;
+            document.getElementById('filter-absen-Hadir').textContent = `Hadir (${hadir})`;
+            document.getElementById('filter-absen-Izin').textContent = `Izin (${izin})`;
+            document.getElementById('filter-absen-Alfa').textContent = `Alfa (${alfa})`;
+
+            const dateObj = new Date(currentAttendanceDate + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('footer-attendance-date-label').textContent = `Absensi: ${formattedDate}`;
+        }
+
+        function setAttendanceFilter(status) {
+            currentAttendanceFilter = status;
+            ['ALL', 'Hadir', 'Izin', 'Alfa'].forEach(key => {
+                const btn = document.getElementById(`filter-absen-${key}`);
+                if (key === status) {
+                    btn.className = "px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-jet-900 text-lemon-300 border-2 border-jet-900 transition-all";
+                } else {
+                    btn.className = "px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-white text-jet-900 hover:bg-lemon-100 border-2 border-jet-900 transition-all";
+                }
+            });
+            filterStudents();
+        }
+
+        function updateStudentAttendance(index, status) {
+            if (!isAdmin) return;
+            const student = appData.siswa[index];
+            if (!student) return;
+            const map = getTodayAttendanceMap();
+            map[student.nisn] = status;
+            saveState();
+            filterStudents();
+            showToast(`${student.nama} ditandai ${status}.`, 'success');
+        }
+
+        function setAllAttendance(status) {
+            if (!isAdmin) return;
+            const map = getTodayAttendanceMap();
+            appData.siswa.forEach(s => {
+                map[s.nisn] = status;
+            });
+            saveState();
+            filterStudents();
+            showToast(`Seluruh siswa (${appData.siswa.length}) ditandai ${status}!`, 'success');
+        }
+
+        function resetAttendanceDate() {
+            if (!isAdmin) return;
+            appData.absensiByDate[currentAttendanceDate] = {};
+            saveState();
+            filterStudents();
+            showToast('Absensi tanggal ini direset ke default (Hadir).', 'info');
+        }
+
+        function renderStudents(filterQuery = '') {
+            const tbody = document.getElementById('students-table-body');
+            const emptyState = document.getElementById('empty-search-state');
+            if (!tbody) return;
+
+            const query = (filterQuery || '').toLowerCase().trim();
+            updateAttendanceStats();
+
+            const filtered = appData.siswa
+                .map((s, originalIndex) => ({
+                    ...s,
+                    absen: originalIndex + 1,
+                    originalIndex,
+                    status: getStudentStatus(s.nisn)
+                }))
+                .filter(s => {
+                    const nama = String(s.nama || '').toLowerCase();
+                    const nisn = String(s.nisn || '').toLowerCase();
+                    const ayah = String(s.ayah || '').toLowerCase();
+                    const matchesText = nama.includes(query) || nisn.includes(query) || ayah.includes(query);
+                    const matchesStatus = currentAttendanceFilter === 'ALL' || s.status === currentAttendanceFilter;
+                    return matchesText && matchesStatus;
+                });
+
+            const heroCount = document.getElementById('hero-student-count');
+            const totalCount = document.getElementById('total-count');
+            const visibleCount = document.getElementById('visible-count');
+            if (heroCount) heroCount.textContent = appData.siswa.length;
+            if (totalCount) totalCount.textContent = appData.siswa.length;
+            if (visibleCount) visibleCount.textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            }
+
+            if (emptyState) emptyState.classList.add('hidden');
+            tbody.innerHTML = filtered.map(s => {
+                const statusBadgeStyles = {
+                    'Hadir': 'bg-emerald-300 text-jet-900 border-jet-900',
+                    'Izin': 'bg-amber-300 text-jet-900 border-jet-900',
+                    'Alfa': 'bg-rose-500 text-white border-jet-900'
+                };
+                const statusIcons = {
+                    'Hadir': 'fa-circle-check',
+                    'Izin': 'fa-envelope-open-text',
+                    'Alfa': 'fa-circle-xmark'
+                };
+
+                const attendanceCellHtml = isAdmin
+                    ? `<div class="inline-flex items-center gap-1.5 bg-lemon-100 p-1 rounded-xl border-2 border-jet-900">
+                            <button type="button" onclick="updateStudentAttendance(${s.originalIndex}, 'Hadir')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold transition-all ${s.status === 'Hadir' ? 'bg-emerald-400 text-jet-900 border border-jet-900 shadow-sm' : 'text-neutral-600 hover:bg-white'}" title="Tandai Hadir">
+                                Hadir
+                            </button>
+                            <button type="button" onclick="updateStudentAttendance(${s.originalIndex}, 'Izin')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold transition-all ${s.status === 'Izin' ? 'bg-amber-300 text-jet-900 border border-jet-900 shadow-sm' : 'text-neutral-600 hover:bg-white'}" title="Tandai Izin">
+                                Izin
+                            </button>
+                            <button type="button" onclick="updateStudentAttendance(${s.originalIndex}, 'Alfa')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold transition-all ${s.status === 'Alfa' ? 'bg-rose-500 text-white border border-jet-900 shadow-sm' : 'text-neutral-600 hover:bg-white'}" title="Tandai Alfa">
+                                Alfa
+                            </button>
+                       </div>`
+                    : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold border-2 ${statusBadgeStyles[s.status]}">
+                            <i class="fa-solid ${statusIcons[s.status]}"></i>
+                            ${escapeHtml(s.status)}
+                       </span>`;
+
+                return `
+                <tr class="hover:bg-lemon-100/80 transition-colors">
+                    <td class="py-3.5 px-4 text-center font-mono text-xs">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-lemon-200 border border-jet-900 text-jet-900 font-extrabold">
+                            ${String(s.absen).padStart(2, '0')}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-5 min-w-[340px]">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-base font-extrabold text-[#0A0A0A] leading-snug">${escapeHtml(s.nama)}</span>
+                            <div class="flex-shrink-0">
+                                ${attendanceCellHtml}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-4 font-mono text-xs font-bold text-neutral-800">
+                        <span class="px-2.5 py-1 rounded-md bg-lemon-100 border border-jet-900/30">${escapeHtml(s.nisn)}</span>
+                    </td>
+                    <td class="py-3.5 px-4 font-semibold text-neutral-800">
+                        ${escapeHtml(s.ayah)}
+                    </td>
+                    <td class="py-3.5 px-5 text-right admin-only ${isAdmin ? '' : 'hidden'}">
+                        <div class="inline-flex items-center gap-1.5">
+                            <button type="button" onclick="openStudentModal(${s.originalIndex})" class="p-2 rounded-lg bg-lemon-300 text-jet-900 border border-jet-900 hover:bg-lemon-400 transition-colors" title="Edit Biodata Siswa">
+                                <i class="fa-solid fa-pen text-xs"></i>
+                            </button>
+                            <button type="button" onclick="deleteStudent(${s.originalIndex})" class="p-2 rounded-lg bg-rose-500 text-white border border-jet-900 hover:bg-rose-600 transition-colors" title="Hapus Siswa">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        function filterStudents() {
+            const val = document.getElementById('student-search').value;
+            renderStudents(val);
+        }
+
+        // --- 4. MODE ADMIN & AUTH LOGIC (SANDI: 2010) ---
+        function handleAdminButtonClick() {
+            if (isAdmin) {
+                logoutAdmin();
+            } else {
+                document.getElementById('admin-password-input').value = '';
+                document.getElementById('admin-login-error').classList.add('hidden');
+                openModal('modal-admin-login');
+                setTimeout(() => document.getElementById('admin-password-input').focus(), 100);
+            }
+        }
+
+        function submitAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('admin-password-input').value;
+            if (pass === '2010') {
+                isAdmin = true;
+                localStorage.setItem('dkv3_is_admin', 'true');
+                closeModal('modal-admin-login');
+                updateAdminUI();
+                showToast('Berhasil masuk ke Mode Admin DKV 3!', 'success');
+            } else {
+                document.getElementById('admin-login-error').classList.remove('hidden');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            localStorage.setItem('dkv3_is_admin', 'false');
+            updateAdminUI();
+            showToast('Kembali ke Mode Siswa (Read-Only).', 'info');
+        }
+
+        function updateAdminUI() {
+            const adminElements = document.querySelectorAll('.admin-only');
+            const toolbar = document.getElementById('admin-toolbar');
+            const btnText = document.getElementById('btn-admin-text');
+            const btnToggle = document.getElementById('btn-admin-toggle');
+            const indicator = document.getElementById('mode-indicator');
+
+            if (isAdmin) {
+                adminElements.forEach(el => el.classList.remove('hidden'));
+                toolbar.classList.remove('hidden');
+                btnText.textContent = 'Keluar Admin';
+                btnToggle.className = "inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold bg-lemon-300 hover:bg-lemon-400 text-jet-900 border-2 border-jet-900 shadow-brutal-sm transition-all";
+                indicator.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-amber-400 border border-jet-900 animate-ping"></span> Mode Admin`;
+                indicator.className = "hidden md:inline-flex items-center gap-2 text-xs font-extrabold px-3.5 py-1.5 rounded-full bg-jet-900 text-lemon-300 border-2 border-jet-900";
+            } else {
+                adminElements.forEach(el => el.classList.add('hidden'));
+                toolbar.classList.add('hidden');
+                btnText.textContent = 'Mode Admin';
+                btnToggle.className = "inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold bg-jet-900 hover:bg-lemon-300 text-lemon-300 hover:text-jet-900 border-2 border-jet-900 shadow-brutal-sm transition-all";
+                indicator.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-jet-900"></span> Mode Siswa`;
+                indicator.className = "hidden md:inline-flex items-center gap-2 text-xs font-bold px-3.5 py-1.5 rounded-full bg-white text-jet-900 border-2 border-jet-900";
+            }
+            filterStudents();
+        }
+
+        // --- 5. ADMIN EDIT ACTIONS ---
+        function openEditStrukturModal() {
+            document.getElementById('input-wali').value = appData.struktur.wali;
+            document.getElementById('input-ketua').value = appData.struktur.ketua;
+            document.getElementById('input-wakil').value = appData.struktur.wakil;
+            document.getElementById('input-sekretaris').value = appData.struktur.sekretaris;
+            document.getElementById('input-bendahara').value = appData.struktur.bendahara;
+            openModal('modal-edit-struktur');
+        }
+
+        function saveStruktur(e) {
+            e.preventDefault();
+            appData.struktur = {
+                wali: document.getElementById('input-wali').value.trim(),
+                ketua: document.getElementById('input-ketua').value.trim(),
+                wakil: document.getElementById('input-wakil').value.trim(),
+                sekretaris: document.getElementById('input-sekretaris').value.trim(),
+                bendahara: document.getElementById('input-bendahara').value.trim(),
+            };
+            saveState();
+            renderStruktur();
+            closeModal('modal-edit-struktur');
+            showToast('Struktur organisasi kelas berhasil diperbarui!', 'success');
+        }
+
+        function openEditKasModal() {
+            document.getElementById('input-kas-sept').value = appData.kas.september;
+            document.getElementById('input-kas-now').value = appData.kas.sekarang;
+            document.getElementById('input-kas-note').value = '';
+            openModal('modal-edit-kas');
+        }
+
+        function saveKas(e) {
+            e.preventDefault();
+            const newSept = Number(document.getElementById('input-kas-sept').value);
+            const newNow = Number(document.getElementById('input-kas-now').value);
+            const note = document.getElementById('input-kas-note').value.trim();
+
+            appData.kas.september = newSept;
+            appData.kas.sekarang = newNow;
+
+            if (note) {
+                appData.kas.logs.unshift({
+                    text: note,
+                    amount: formatRupiah(newNow)
+                });
+            }
+
+            saveState();
+            renderKas();
+            closeModal('modal-edit-kas');
+            showToast('Data keuangan kas kelas berhasil diperbarui!', 'success');
+        }
+
+        function openStudentModal(index = -1) {
+            document.getElementById('edit-student-index').value = index;
+            if (index >= 0) {
+                const s = appData.siswa[index];
+                document.getElementById('modal-student-title').textContent = 'Edit Data Siswa';
+                document.getElementById('input-student-name').value = s.nama;
+                document.getElementById('input-student-nisn').value = s.nisn;
+                document.getElementById('input-student-father').value = s.ayah;
+            } else {
+                document.getElementById('modal-student-title').textContent = 'Tambah Siswa Baru';
+                document.getElementById('input-student-name').value = '';
+                document.getElementById('input-student-nisn').value = '';
+                document.getElementById('input-student-father').value = '';
+            }
+            openModal('modal-student');
+        }
+
+        function saveStudent(e) {
+            e.preventDefault();
+            const idx = Number(document.getElementById('edit-student-index').value);
+            const studentObj = {
+                nama: document.getElementById('input-student-name').value.trim(),
+                nisn: document.getElementById('input-student-nisn').value.trim(),
+                ayah: document.getElementById('input-student-father').value.trim()
+            };
+
+            if (idx >= 0) {
+                appData.siswa[idx] = studentObj;
+                showToast('Data siswa berhasil diperbarui!', 'success');
+            } else {
+                appData.siswa.push(studentObj);
+                showToast('Siswa baru berhasil ditambahkan!', 'success');
+            }
+
+            saveState();
+            filterStudents();
+            closeModal('modal-student');
+        }
+
+        function deleteStudent(index) {
+            const name = appData.siswa[index].nama;
+            appData.siswa.splice(index, 1);
+            saveState();
+            filterStudents();
+            showToast(`Siswa "${name}" telah dihapus dari daftar.`, 'info');
+        }
+
+        function openAddRuleModal() {
+            document.getElementById('input-new-rule').value = '';
+            openModal('modal-rule');
+        }
+
+        function saveNewRule(e) {
+            e.preventDefault();
+            const text = document.getElementById('input-new-rule').value.trim();
+            if (text) {
+                appData.kesepakatan.push(text);
+                saveState();
+                renderRules();
+                closeModal('modal-rule');
+                showToast('Kesepakatan kelas baru ditambahkan!', 'success');
+            }
+        }
+
+        function deleteRule(index) {
+            appData.kesepakatan.splice(index, 1);
+            saveState();
+            renderRules();
+            showToast('Poin kesepakatan kelas dihapus.', 'info');
+        }
+
+        function resetAllData() {
+            appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+            saveState();
+            renderAll();
+            showToast('Seluruh data dikembalikan ke pengaturan awal DKV 3!', 'success');
+        }
+
+        // --- 6. UTILITY: COPY HTML CODE, MODAL & TOAST ---
+        function copyFullHtmlCode() {
+            const fullHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const textarea = document.createElement('textarea');
+            textarea.value = fullHtml;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Seluruh kode HTML berhasil disalin ke clipboard!', 'success');
+            } catch (err) {
+                showToast('Gagal menyalin kode HTML.', 'error');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const styles = {
+                success: 'bg-jet-900 text-lemon-300 border-lemon-300',
+                error: 'bg-rose-600 text-white border-jet-900',
+                info: 'bg-lemon-300 text-jet-900 border-jet-900'
+            };
+            const icons = {
+                success: 'fa-circle-check',
+                error: 'fa-circle-xmark',
+                info: 'fa-circle-info'
+            };
+
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-2xl border-2 shadow-brutal text-xs sm:text-sm font-extrabold transition-all duration-300 ${styles[type]}`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type]} text-base"></i><span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(8px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        // --- INITIALIZE ON LOAD ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('attendance-date');
+            if (dateInput) dateInput.value = currentAttendanceDate;
+            renderAll();
+        });
+    </script>
+</body>
+</html>
